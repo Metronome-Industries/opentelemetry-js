@@ -13,19 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Enum representing different types of sampling strategies.
- */
-export enum StrategyType {
-  /** Constant sampling strategy */
-  CONST = 'CONST',
-  /** Probabilistic sampling strategy */
-  PROBABILISTIC = 'PROBABILISTIC',
-  /** Rate-limiting sampling strategy */
-  RATELIMITING = 'RATELIMITING',
-  /** Remote sampling strategy */
-  REMOTE = 'REMOTE',
-}
 
 /**
  * Interface for probabilistic sampling options.
@@ -49,8 +36,6 @@ export interface PerOperationStrategy {
  * Interface representing the response of a sampling strategy.
  */
 export interface SamplingStrategyResponse {
-  /** The type of sampling strategy being used */
-  strategyType: StrategyType;
   /** The probabilistic sampling options */
   probabilisticSampling: ProbabilisticSamplingOptions;
   /** Optional operation-specific sampling configuration */

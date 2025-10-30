@@ -23,7 +23,7 @@ import {
 } from '@opentelemetry/sdk-trace-base';
 import * as axios from 'axios';
 import { PerOperationSampler } from './PerOperationSampler';
-import { SamplingStrategyResponse, StrategyType } from './types';
+import { SamplingStrategyResponse } from './types';
 
 interface JaegerRemoteSamplerOptions {
   /** Address of a service that implements the Remote Sampling API, such as Jaeger Collector or OpenTelemetry Collector */
@@ -114,18 +114,17 @@ export class JaegerRemoteSampler implements Sampler {
           perOperationStrategies,
         }),
       });
+    } else if (newConfig.probabilisticSampling) {
+      const samplingRate = newConfig.probabilisticSampling.samplingRate ?? 0;
+      return new ParentBasedSampler({
+        root: new TraceIdRatioBasedSampler(samplingRate),
+      });
     }
-    switch (newConfig.strategyType) {
-      case StrategyType.PROBABILISTIC:
-        return new ParentBasedSampler({
-          root: new TraceIdRatioBasedSampler(
-            newConfig.probabilisticSampling.samplingRate
-          ),
-        });
-      default:
-        diag.warn(`Strategy ${newConfig.strategyType} not supported.`);
-        return this._sampler;
-    }
+
+    // TODO: support rate limitint sampling:
+    // https://github.com/jaegertracing/jaeger-idl/blob/main/proto/api_v2/sampling.proto#L101
+    diag.warn(`No valid strategy found in config`);
+    return this._sampler;
   }
 
   private async getSamplerConfig(
